@@ -1,11 +1,11 @@
 package router
 
 import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/swagger"
 	"otomeet-backend/handler"
 	"otomeet-backend/middleware"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/swagger"
 )
 
 func SetupRoutes(app *fiber.App) {
@@ -14,8 +14,8 @@ func SetupRoutes(app *fiber.App) {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "*",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-		AllowMethods:     "GET, POST, PUT, DELETE",
-		AllowCredentials: true,
+		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
+		AllowCredentials: false,
 	}))
 
 	// Endpoint Dokumentasi Swagger UI (Publik)
@@ -40,13 +40,13 @@ func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api", middleware.Protected())
 
 	// Fitur Akun User
-	api.Get("/me", handler.GetProfile)                    // Lihat profil saya
-	api.Put("/profile", handler.UpdateProfile)            // Update profil
-	api.Put("/change-password", handler.ChangePassword)   // Ubah password
-	api.Delete("/delete-account", handler.DeleteAccount)  // Hapus akun
-	api.Get("/user/:id", handler.GetUserByID)             // Lihat profil user lain (public)
-	api.Post("/upload-profile-photo", handler.UploadProfilePhoto)    // Upload foto profil
-	api.Delete("/delete-profile-photo", handler.DeleteProfilePhoto)  // Hapus foto profil
+	api.Get("/me", handler.GetProfile)                              // Lihat profil saya
+	api.Put("/profile", handler.UpdateProfile)                      // Update profil
+	api.Put("/change-password", handler.ChangePassword)             // Ubah password
+	api.Delete("/delete-account", handler.DeleteAccount)            // Hapus akun
+	api.Get("/user/:id", handler.GetUserByID)                       // Lihat profil user lain (public)
+	api.Post("/upload-profile-photo", handler.UploadProfilePhoto)   // Upload foto profil
+	api.Delete("/delete-profile-photo", handler.DeleteProfilePhoto) // Hapus foto profil
 
 	// Endpoint Fitur Utama 1 (Touring)
 	api.Get("/touring", handler.GetAllTourings)     // Semua user login bisa melihat daftar agenda
@@ -64,8 +64,8 @@ func SetupRoutes(app *fiber.App) {
 
 	// --- KHUSUS MANAJEMEN ROLE ADMIN ONLY ---
 	adminRoutes := api.Group("", middleware.AdminOnly())
-	adminRoutes.Post("/touring", handler.CreateTouring)              // Admin menambah jadwal
-	adminRoutes.Put("/touring/:id", handler.UpdateTouring)           // Admin mengedit jadwal
-	adminRoutes.Delete("/touring/:id", handler.DeleteTouring)        // Admin menghapus jadwal
+	adminRoutes.Post("/touring", handler.CreateTouring)                // Admin menambah jadwal
+	adminRoutes.Put("/touring/:id", handler.UpdateTouring)             // Admin mengedit jadwal
+	adminRoutes.Delete("/touring/:id", handler.DeleteTouring)          // Admin menghapus jadwal
 	adminRoutes.Get("/touring/:id/peserta", handler.GetPesertaTouring) // Admin lihat daftar peserta
 }

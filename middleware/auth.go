@@ -10,6 +10,10 @@ import (
 
 func Protected() fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		// Allow preflight OPTIONS requests to pass through without auth
+		if c.Method() == "OPTIONS" {
+			return c.Next()
+		}
 		authHeader := c.Get("Authorization")
 		if authHeader == "" {
 			return c.Status(401).JSON(fiber.Map{"message": "Dilarang masuk, token tidak ditemukan"})
