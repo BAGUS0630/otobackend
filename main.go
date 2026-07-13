@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 	"otomeet-backend/config"
 	"otomeet-backend/router"
 	_ "otomeet-backend/docs"
@@ -37,7 +38,10 @@ func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = ":8000"
+	} else if !strings.Contains(port, ":") {
+		port = ":" + port
 	}
+
 	logFatal := app.Listen(port)
 	if logFatal != nil {
 		panic(logFatal)
