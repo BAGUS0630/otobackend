@@ -3,20 +3,20 @@ package model
 import "time"
 
 type Touring struct {
-	ID             uint      `gorm:"primaryKey;column:id" json:"id"`
-	NamaTouring    string    `gorm:"column:title;not null" json:"nama_touring"`
-	Tujuan         string    `gorm:"column:destination;not null" json:"tujuan"`
-	Tanggal        string    `gorm:"column:departure_date;not null" json:"tanggal"`
-	Waktu          string    `json:"waktu"`
-	Deskripsi      string    `gorm:"column:description;type:text" json:"deskripsi"`
-	Kuota          int       `gorm:"column:max_participants" json:"kuota"`
-	ImageURL       string    `gorm:"column:image_url" json:"image_url"`
-	LokasiAwal     string    `json:"lokasi_awal"`
-	LokasiAkhir    string    `json:"lokasi_akhir"`
-	HargaTiket     int       `json:"harga_tiket"`
-	CreatedBy      uint      `json:"created_by"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	ID          uint      `gorm:"primaryKey;column:id" json:"id"`
+	NamaTouring string    `gorm:"column:title;not null" json:"nama_touring"`
+	Tujuan      string    `gorm:"column:destination;not null" json:"tujuan"`
+	Tanggal     string    `gorm:"column:departure_date;not null" json:"tanggal"`
+	Waktu       string    `json:"waktu"`
+	Deskripsi   string    `gorm:"column:description;type:text" json:"deskripsi"`
+	Kuota       int       `gorm:"column:max_participants" json:"kuota"`
+	ImageURL    string    `gorm:"column:image_url" json:"image_url"`
+	LokasiAwal  string    `json:"lokasi_awal"`
+	LokasiAkhir string    `json:"lokasi_akhir"`
+	HargaTiket  int       `json:"harga_tiket"`
+	CreatedBy   uint      `json:"created_by"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type Registration struct {

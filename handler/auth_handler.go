@@ -58,8 +58,8 @@ func Register(c *fiber.Ctx) error {
 		user.Role = "user"
 	}
 
-	// --- Lanjutkan ke fungsi simpan repository Anda di bawah menggunakan objek `user` 
-	
+	// --- Lanjutkan ke fungsi simpan repository Anda di bawah menggunakan objek `user`
+
 	// Simpan ke database
 	if err := repository.CreateUser(&user); err != nil {
 		return c.Status(400).JSON(fiber.Map{"message": "Username sudah terdaftar"})

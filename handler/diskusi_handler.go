@@ -41,7 +41,7 @@ func GetDiskusiByTouring(c *fiber.Ctx) error {
 // @Router       /api/touring/{id}/diskusi [post]
 func CreateDiskusi(c *fiber.Ctx) error {
 	touringID := c.Params("id")
-	
+
 	// Cek user dari token JWT
 	userIDFloat, ok := c.Locals("user_id").(float64)
 	if !ok {

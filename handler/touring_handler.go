@@ -169,29 +169,29 @@ func DeleteTouring(c *fiber.Ctx) error {
 }
 
 func JoinTouring(c *fiber.Ctx) error {
-    // 1. Ambil ID touring dari URL parameter (:id)
-    touringID := c.Params("id")
+	// 1. Ambil ID touring dari URL parameter (:id)
+	touringID := c.Params("id")
 
-    // 2. Skenario Logika Sederhana (Mengurangi Kuota Langsung)
-    // Catatan: Jika Anda punya tabel relasi pendaftaran, simpan datanya di sini.
-    // Di bawah ini adalah contoh logika untuk mengurangi kuota langsung di Supabase lewat GORM:
-    var touring model.Touring
-    if err := config.DB.First(&touring, touringID).Error; err != nil {
-        return c.Status(44).JSON(fiber.Map{"message": "Jadwal touring tidak ditemukan"})
-    }
+	// 2. Skenario Logika Sederhana (Mengurangi Kuota Langsung)
+	// Catatan: Jika Anda punya tabel relasi pendaftaran, simpan datanya di sini.
+	// Di bawah ini adalah contoh logika untuk mengurangi kuota langsung di Supabase lewat GORM:
+	var touring model.Touring
+	if err := config.DB.First(&touring, touringID).Error; err != nil {
+		return c.Status(44).JSON(fiber.Map{"message": "Jadwal touring tidak ditemukan"})
+	}
 
-    if touring.Kuota <= 0 {
-        return c.Status(400).JSON(fiber.Map{"message": "Maaf, kuota peserta untuk touring ini sudah penuh!"})
-    }
+	if touring.Kuota <= 0 {
+		return c.Status(400).JSON(fiber.Map{"message": "Maaf, kuota peserta untuk touring ini sudah penuh!"})
+	}
 
-    // Kurangi kuota 1 angka
-    touring.Kuota = touring.Kuota - 1
-    if err := config.DB.Save(&touring).Error; err != nil {
-        return c.Status(500).JSON(fiber.Map{"message": "Gagal bergabung ke touring"})
-    }
+	// Kurangi kuota 1 angka
+	touring.Kuota = touring.Kuota - 1
+	if err := config.DB.Save(&touring).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"message": "Gagal bergabung ke touring"})
+	}
 
-    return c.Status(200).JSON(fiber.Map{
-        "message": "Berhasil bergabung ke agenda touring! 🏍️",
-        "data":    touring,
-    })
+	return c.Status(200).JSON(fiber.Map{
+		"message": "Berhasil bergabung ke agenda touring! 🏍️",
+		"data":    touring,
+	})
 }

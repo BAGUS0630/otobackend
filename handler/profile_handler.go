@@ -52,11 +52,11 @@ func GetUserByID(c *fiber.Ctx) error {
 
 	// Return hanya field public
 	return c.JSON(fiber.Map{
-		"id":             user.ID,
-		"username":       user.Username,
-		"full_name":      user.FullName,
-		"profile_photo":  user.ProfilePhoto,
-		"created_at":     user.CreatedAt,
+		"id":            user.ID,
+		"username":      user.Username,
+		"full_name":     user.FullName,
+		"profile_photo": user.ProfilePhoto,
+		"created_at":    user.CreatedAt,
 	})
 }
 

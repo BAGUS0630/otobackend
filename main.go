@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 	"otomeet-backend/config"
-	"otomeet-backend/router"
 	_ "otomeet-backend/docs"
+	"otomeet-backend/router"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
