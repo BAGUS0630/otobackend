@@ -28,6 +28,9 @@ func SetupRoutes(app *fiber.App) {
 		})
 	})
 
+	// Statistik singkat (publik)
+	app.Get("/api/stats", handler.GetStats)
+
 	// Endpoint Autentikasi Publik
 	app.Post("/register", handler.Register)
 	app.Post("/login", handler.Login)
