@@ -1,0 +1,590 @@
+definitions:
+  model.Diskusi:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      message:
+        type: string
+      touring_id:
+        type: integer
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: integer
+    type: object
+  model.Registration:
+    properties:
+      bike_model:
+        type: string
+      id:
+        type: integer
+      license_plate:
+        type: string
+      registered_at:
+        type: string
+      touring_id:
+        type: integer
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: integer
+    type: object
+  model.Touring:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deskripsi:
+        type: string
+      harga_tiket:
+        type: integer
+      id:
+        type: integer
+      image_url:
+        type: string
+      kuota:
+        type: integer
+      lokasi_akhir:
+        type: string
+      lokasi_awal:
+        type: string
+      nama_touring:
+        type: string
+      tanggal:
+        type: string
+      tujuan:
+        type: string
+      updated_at:
+        type: string
+      waktu:
+        type: string
+    type: object
+  model.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        description: 'Changed: removed NOT NULL to handle existing data'
+        type: string
+      email_verified:
+        type: boolean
+      full_name:
+        type: string
+      id:
+        type: integer
+      phone_number:
+        type: string
+      profile_photo:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Ini adalah dokumentasi API untuk platform OtoMeet.
+  title: OtoMeet API
+  version: "1.0"
+paths:
+  /api/change-password:
+    put:
+      consumes:
+      - application/json
+      description: Mengubah password user yang sedang aktif login
+      parameters:
+      - description: Password Lama dan Baru
+        in: body
+        name: password
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ubah Password User
+      tags:
+      - Authentication
+  /api/delete-account:
+    delete:
+      consumes:
+      - application/json
+      description: Menghapus akun user secara permanen
+      parameters:
+      - description: Password Konfirmasi
+        in: body
+        name: password
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Hapus Akun
+      tags:
+      - User Profile
+  /api/delete-profile-photo:
+    delete:
+      description: Menghapus foto profil user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Hapus Foto Profil
+      tags:
+      - User Profile
+  /api/me:
+    get:
+      description: Mengambil data profil user yang sedang login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Lihat Profil User
+      tags:
+      - User Profile
+  /api/my-touring:
+    get:
+      description: Melihat daftar agenda touring apa saja yang pernah diikuti oleh
+        user login saat ini
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Registration'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Riwayat Touring Saya
+      tags:
+      - Registration
+  /api/profile:
+    put:
+      consumes:
+      - application/json
+      description: Mengubah data profil user yang sedang login
+      parameters:
+      - description: Data Profil
+        in: body
+        name: profile
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update Profil User
+      tags:
+      - User Profile
+  /api/register-touring:
+    post:
+      consumes:
+      - application/json
+      description: Mendaftarkan diri dan kendaraan ke dalam salah satu jadwal touring
+      parameters:
+      - description: Data Kendaraan
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/model.Registration'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Gabung Agenda Touring
+      tags:
+      - Registration
+  /api/touring:
+    get:
+      description: Mengambil semua daftar agenda touring komunitas dengan pagination
+        dan search (User & Admin)
+      parameters:
+      - description: 'Nomor halaman (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Jumlah data per halaman (default: 10)'
+        in: query
+        name: limit
+        type: integer
+      - description: Cari berdasarkan nama atau tujuan touring
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Lihat Semua Jadwal Touring
+      tags:
+      - Touring
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan jadwal touring baru ke database (Khusus Admin Only)
+      parameters:
+      - description: Data Agenda
+        in: body
+        name: touring
+        required: true
+        schema:
+          $ref: '#/definitions/model.Touring'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Buat Agenda Touring Baru
+      tags:
+      - Touring
+  /api/touring/{id}:
+    delete:
+      description: Menghapus agenda touring berdasarkan ID (Khusus Admin Only)
+      parameters:
+      - description: Touring ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Hapus Jadwal Touring
+      tags:
+      - Touring
+    get:
+      description: Mengambil detail satu agenda touring berdasarkan ID
+      parameters:
+      - description: Touring ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Touring'
+      security:
+      - BearerAuth: []
+      summary: Detail Jadwal Touring
+      tags:
+      - Touring
+    put:
+      consumes:
+      - application/json
+      description: Mengubah data agenda touring berdasarkan ID (Khusus Admin Only)
+      parameters:
+      - description: Touring ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data Perubahan
+        in: body
+        name: touring
+        required: true
+        schema:
+          $ref: '#/definitions/model.Touring'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Edit Jadwal Touring
+      tags:
+      - Touring
+  /api/touring/{id}/diskusi:
+    get:
+      description: Mengambil semua komentar/diskusi untuk suatu agenda touring
+      parameters:
+      - description: Touring ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Diskusi'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Ambil Diskusi Touring
+      tags:
+      - Diskusi
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan komentar baru ke dalam agenda touring tertentu
+      parameters:
+      - description: Touring ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Pesan Diskusi
+        in: body
+        name: diskusi
+        required: true
+        schema:
+          $ref: '#/definitions/model.Diskusi'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Kirim Komentar Diskusi
+      tags:
+      - Diskusi
+  /api/touring/{id}/peserta:
+    get:
+      description: Admin dapat melihat semua peserta yang mendaftar pada suatu agenda
+        touring
+      parameters:
+      - description: Touring ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Registration'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Daftar Peserta Touring
+      tags:
+      - Registration
+  /api/upload-profile-photo:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Mengupload foto profil user
+      parameters:
+      - description: Foto profil (JPG, PNG, GIF, max 5MB)
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Upload Foto Profil
+      tags:
+      - User Profile
+  /api/user/{id}:
+    get:
+      description: Mengambil data profil user publik berdasarkan user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Lihat Profil User Lain
+      tags:
+      - User Profile
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Autentikasi akun untuk mendapatkan token JWT
+      parameters:
+      - description: Username dan Password
+        in: body
+        name: login
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Masuk Aplikasi (Login)
+      tags:
+      - Authentication
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Membuat akun user atau admin baru untuk platform OtoMeet
+      parameters:
+      - description: Data Akun
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Registrasi Akun Baru
+      tags:
+      - Authentication
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
