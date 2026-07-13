@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"otomeet-backend/config"
@@ -34,7 +35,15 @@ func main() {
 	// 3. Daftarkan Rute Endpoint
 	router.SetupRoutes(app)
 
-	// 4. Jalankan Server
+	// 4. Tambah endpoint health dan root cepat
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.SendStatus(fiber.StatusOK)
+	})
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("OK")
+	})
+
+	// 5. Jalankan Server
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = ":8000"
@@ -42,6 +51,7 @@ func main() {
 		port = ":" + port
 	}
 
+	fmt.Println("Listening on", port)
 	logFatal := app.Listen(port)
 	if logFatal != nil {
 		panic(logFatal)
