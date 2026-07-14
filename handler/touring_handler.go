@@ -29,6 +29,8 @@ func GetAllTourings(c *fiber.Ctx) error {
 	page := c.QueryInt("page", 1)
 	limit := c.QueryInt("limit", 10)
 	search := c.Query("search", "")
+	sortField := c.Query("sort", "")
+	sortOrder := c.Query("order", "asc")
 
 	if page < 1 {
 		page = 1
@@ -50,6 +52,21 @@ func GetAllTourings(c *fiber.Ctx) error {
 
 	// Hitung total data
 	query.Model(&model.Touring{}).Count(&total)
+
+	// Terapkan pengurutan
+	if sortField != "" {
+		orderStr := sortField
+		if sortOrder == "desc" {
+			orderStr += " DESC"
+		} else {
+			orderStr += " ASC"
+		}
+		query = query.Order(orderStr)
+	} else {
+		// Default: Akan datang diurutkan lebih dekat ke hari ini, yang sudah lewat di bawah
+		// CASE WHEN bekerja di Postgres & SQLite
+		query = query.Order("CASE WHEN departure_date >= CURRENT_DATE THEN 0 ELSE 1 END").Order("ABS(EXTRACT(EPOCH FROM departure_date::timestamp - CURRENT_DATE::timestamp)) ASC")
+	}
 
 	// Ambil data dengan limit dan offset
 	if err := query.Limit(limit).Offset(offset).Find(&tourings).Error; err != nil {
