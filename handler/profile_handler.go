@@ -26,7 +26,7 @@ func GetProfile(c *fiber.Ctx) error {
 	userID := uint(userIDFloat)
 
 	var user model.User
-	if err := config.DB.First(&user, userID).Error; err != nil {
+	if err := config.DB.Preload("Vehicles").First(&user, userID).Error; err != nil {
 		return utils.RespondError(c, 404, "User tidak ditemukan", "USER_NOT_FOUND")
 	}
 

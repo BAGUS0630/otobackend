@@ -15,6 +15,7 @@ func MigrateDB(db *gorm.DB) error {
 		&model.Touring{},
 		&model.Registration{},
 		&model.Diskusi{},
+		&model.Vehicle{},
 	); err != nil {
 		return fmt.Errorf("gagal melakukan Auto Migrate: %w", err)
 	}

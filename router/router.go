@@ -62,6 +62,11 @@ func SetupRoutes(app *fiber.App) {
 	api.Post("/register-touring", handler.RegisterToTouring) // Mengikuti agenda touring
 	api.Get("/my-touring", handler.GetMyTourings)            // Melihat riwayat touring saya
 
+	// Fitur Kendaraan (Garasi Motor)
+	api.Post("/vehicles", handler.AddVehicle)
+	api.Get("/vehicles", handler.GetMyVehicles)
+	api.Delete("/vehicles/:id", handler.DeleteVehicle)
+
 	// --- KHUSUS MANAJEMEN ROLE ADMIN ONLY ---
 	adminRoutes := api.Group("", middleware.AdminOnly())
 	adminRoutes.Post("/touring", handler.CreateTouring)                // Admin menambah jadwal

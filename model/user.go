@@ -11,6 +11,7 @@ type User struct {
 	FullName      string    `gorm:"column:full_name" json:"full_name"`
 	PhoneNumber   string    `json:"phone_number"`
 	ProfilePhoto  string    `gorm:"column:profile_photo" json:"profile_photo"`
+	Vehicles      []Vehicle `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"vehicles,omitempty"`
 	EmailVerified bool      `gorm:"default:false" json:"email_verified"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
