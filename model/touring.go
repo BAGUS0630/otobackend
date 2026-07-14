@@ -35,6 +35,7 @@ type Diskusi struct {
 	TouringID uint      `gorm:"not null" json:"touring_id"`
 	UserID    uint      `gorm:"not null" json:"user_id"`
 	User      User      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user,omitempty"`
+	Touring   Touring   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"touring,omitempty"`
 	Message   string    `gorm:"type:text;not null" json:"message"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 }
