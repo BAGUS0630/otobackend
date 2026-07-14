@@ -24,6 +24,7 @@ type Registration struct {
 	UserID       uint      `json:"user_id"`
 	User         User      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user,omitempty"`
 	TouringID    uint      `json:"touring_id"`
+	Touring      Touring   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"touring,omitempty"`
 	BikeModel    string    `gorm:"not null" json:"bike_model"`
 	LicensePlate string    `gorm:"not null" json:"license_plate"`
 	RegisteredAt time.Time `gorm:"autoCreateTime" json:"registered_at"`
