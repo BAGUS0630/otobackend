@@ -64,8 +64,9 @@ func GetAllTourings(c *fiber.Ctx) error {
 		query = query.Order(orderStr)
 	} else {
 		// Default: Akan datang diurutkan lebih dekat ke hari ini, yang sudah lewat di bawah
-		// CASE WHEN bekerja di Postgres & SQLite
-		query = query.Order("CASE WHEN departure_date >= CURRENT_DATE THEN 0 ELSE 1 END").Order("ABS(EXTRACT(EPOCH FROM departure_date::timestamp - CURRENT_DATE::timestamp)) ASC")
+		query = query.Order("CASE WHEN departure_date >= to_char(CURRENT_DATE, 'YYYY-MM-DD') THEN 0 ELSE 1 END ASC")
+		query = query.Order("CASE WHEN departure_date >= to_char(CURRENT_DATE, 'YYYY-MM-DD') THEN departure_date END ASC")
+		query = query.Order("CASE WHEN departure_date < to_char(CURRENT_DATE, 'YYYY-MM-DD') THEN departure_date END DESC")
 	}
 
 	// Ambil data dengan limit dan offset
