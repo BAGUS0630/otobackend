@@ -3,6 +3,7 @@ package handler
 import (
 	"otomeet-backend/config"
 	"otomeet-backend/model"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -39,6 +40,27 @@ func RegisterToTouring(c *fiber.Ctx) error {
 	var touring model.Touring
 	if err := config.DB.First(&touring, registration.TouringID).Error; err != nil {
 		return c.Status(404).JSON(fiber.Map{"message": "Agenda touring tidak ditemukan"})
+	}
+
+	// Validasi: Cek apakah touring sudah selesai
+	if len(touring.Tanggal) >= 10 {
+		tglStr := touring.Tanggal[:10]
+		if tgl, errDate := time.Parse("2006-01-02", tglStr); errDate == nil {
+			now := time.Now()
+			today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+			if tgl.Before(today) {
+				return c.Status(400).JSON(fiber.Map{"message": "Maaf, agenda touring ini sudah selesai dan tidak bisa diikuti lagi!"})
+			}
+		}
+	}
+
+	// Validasi: Cek apakah kuota penuh
+	if touring.Kuota > 0 {
+		var count int64
+		config.DB.Model(&model.Registration{}).Where("touring_id = ?", touring.ID).Count(&count)
+		if count >= int64(touring.Kuota) {
+			return c.Status(400).JSON(fiber.Map{"message": "Maaf, kuota peserta untuk touring ini sudah penuh!"})
+		}
 	}
 
 	// Validasi: Cek apakah user bersangkutan sudah mendaftar di touring yang sama
