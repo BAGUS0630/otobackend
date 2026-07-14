@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -97,6 +98,7 @@ func UploadToSupabase(file *multipart.FileHeader, bucket string, folder string) 
 	}
 
 	req.Header.Set("Authorization", "Bearer "+supabaseKey)
+	req.Header.Set("apikey", supabaseKey)
 	req.Header.Set("Content-Type", "application/octet-stream")
 
 	client := &http.Client{}
@@ -108,7 +110,23 @@ func UploadToSupabase(file *multipart.FileHeader, bucket string, folder string) 
 
 	if resp.StatusCode != 200 {
 		body, _ := io.ReadAll(resp.Body)
-		return "", fmt.Errorf("Supabase error: %s", string(body))
+		
+		// Coba parse pesan error dari JSON
+		var errData map[string]interface{}
+		if err := json.Unmarshal(body, &errData); err == nil {
+			if msg, ok := errData["message"].(string); ok {
+				// Cek pesan spesifik yang sering muncul
+				if strings.Contains(msg, "Compact JWS") {
+					return "", fmt.Errorf("API Key Supabase tidak valid (terpotong atau salah format)")
+				}
+				return "", fmt.Errorf("Supabase: %s", msg)
+			}
+			if errStr, ok := errData["error"].(string); ok {
+				return "", fmt.Errorf("Supabase: %s", errStr)
+			}
+		}
+		
+		return "", fmt.Errorf("Gagal mengunggah file ke Supabase")
 	}
 
 	// Return URL file
@@ -143,6 +161,7 @@ func DeleteFromSupabase(fileURL string, bucket string) error {
 	}
 
 	req.Header.Set("Authorization", "Bearer "+supabaseKey)
+	req.Header.Set("apikey", supabaseKey)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -153,7 +172,18 @@ func DeleteFromSupabase(fileURL string, bucket string) error {
 
 	if resp.StatusCode != 200 {
 		body, _ := io.ReadAll(resp.Body)
-		return fmt.Errorf("Supabase error: %s", string(body))
+		
+		var errData map[string]interface{}
+		if err := json.Unmarshal(body, &errData); err == nil {
+			if msg, ok := errData["message"].(string); ok {
+				if strings.Contains(msg, "Compact JWS") {
+					return fmt.Errorf("API Key Supabase tidak valid (terpotong atau salah format)")
+				}
+				return fmt.Errorf("Supabase: %s", msg)
+			}
+		}
+		
+		return fmt.Errorf("Gagal menghapus file dari Supabase")
 	}
 
 	return nil
