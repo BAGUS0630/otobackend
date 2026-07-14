@@ -37,5 +37,7 @@ type Diskusi struct {
 	User      User      `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"user,omitempty"`
 	Touring   Touring   `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"touring,omitempty"`
 	Message   string    `gorm:"type:text;not null" json:"message"`
+	IsEdited  bool      `gorm:"default:false" json:"is_edited"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }

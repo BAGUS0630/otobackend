@@ -105,3 +105,83 @@ func GetLatestDiskusi(c *fiber.Ctx) error {
 
 	return c.JSON(diskusi)
 }
+
+// UpdateDiskusi godoc
+// @Summary      Edit Pesan Diskusi
+// @Description  Memperbarui teks pesan diskusi yang sudah ada. Hanya pemilik pesan yang bisa mengeditnya.
+// @Tags         Diskusi
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id       path      int            true  "ID Diskusi"
+// @Param        diskusi  body      model.Diskusi  true  "Teks Pesan Baru"
+// @Success      200      {object}  map[string]interface{}
+// @Router       /api/diskusi/{id} [put]
+func UpdateDiskusi(c *fiber.Ctx) error {
+	diskusiID := c.Params("id")
+	userIDFloat, ok := c.Locals("user_id").(float64)
+	if !ok {
+		return c.Status(401).JSON(fiber.Map{"message": "Sesi tidak valid"})
+	}
+	userID := uint(userIDFloat)
+
+	var input struct {
+		Message string `json:"message"`
+	}
+	if err := c.BodyParser(&input); err != nil {
+		return c.Status(400).JSON(fiber.Map{"message": "Input tidak valid"})
+	}
+
+	var diskusi model.Diskusi
+	if err := config.DB.First(&diskusi, diskusiID).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{"message": "Pesan tidak ditemukan"})
+	}
+
+	// Validasi kepemilikan pesan
+	if diskusi.UserID != userID {
+		return c.Status(403).JSON(fiber.Map{"message": "Akses ditolak: Hanya pengirim yang bisa mengedit pesan ini"})
+	}
+
+	// Update pesan
+	diskusi.Message = input.Message
+	diskusi.IsEdited = true
+	if err := config.DB.Save(&diskusi).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"message": "Gagal menyimpan perubahan pesan"})
+	}
+
+	return c.JSON(fiber.Map{"message": "Pesan berhasil diedit", "data": diskusi})
+}
+
+// DeleteDiskusi godoc
+// @Summary      Hapus Pesan Diskusi
+// @Description  Menghapus pesan diskusi. Hanya pemilik pesan yang bisa menghapusnya.
+// @Tags         Diskusi
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id  path      int  true  "ID Diskusi"
+// @Success      200 {object}  map[string]string
+// @Router       /api/diskusi/{id} [delete]
+func DeleteDiskusi(c *fiber.Ctx) error {
+	diskusiID := c.Params("id")
+	userIDFloat, ok := c.Locals("user_id").(float64)
+	if !ok {
+		return c.Status(401).JSON(fiber.Map{"message": "Sesi tidak valid"})
+	}
+	userID := uint(userIDFloat)
+
+	var diskusi model.Diskusi
+	if err := config.DB.First(&diskusi, diskusiID).Error; err != nil {
+		return c.Status(404).JSON(fiber.Map{"message": "Pesan tidak ditemukan"})
+	}
+
+	// Validasi kepemilikan pesan
+	if diskusi.UserID != userID {
+		return c.Status(403).JSON(fiber.Map{"message": "Akses ditolak: Hanya pengirim yang bisa menghapus pesan ini"})
+	}
+
+	if err := config.DB.Delete(&diskusi).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"message": "Gagal menghapus pesan"})
+	}
+
+	return c.JSON(fiber.Map{"message": "Pesan berhasil dihapus"})
+}

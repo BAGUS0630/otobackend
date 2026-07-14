@@ -56,6 +56,8 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/touring/:id/diskusi", handler.GetDiskusiByTouring)
 	api.Post("/touring/:id/diskusi", handler.CreateDiskusi)
 	api.Get("/diskusi/latest", handler.GetLatestDiskusi)
+	api.Put("/diskusi/:id", handler.UpdateDiskusi)
+	api.Delete("/diskusi/:id", handler.DeleteDiskusi)
 
 	api.Post("/touring/:id/join", handler.JoinTouring)
 
