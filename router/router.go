@@ -55,6 +55,7 @@ func SetupRoutes(app *fiber.App) {
 	// Fitur Diskusi / Forum Mini
 	api.Get("/touring/:id/diskusi", handler.GetDiskusiByTouring)
 	api.Post("/touring/:id/diskusi", handler.CreateDiskusi)
+	api.Get("/diskusi/latest", handler.GetLatestDiskusi)
 
 	api.Post("/touring/:id/join", handler.JoinTouring)
 

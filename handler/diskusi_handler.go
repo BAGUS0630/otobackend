@@ -81,3 +81,27 @@ func CreateDiskusi(c *fiber.Ctx) error {
 
 	return c.Status(201).JSON(fiber.Map{"message": "Pesan terkirim", "data": diskusi})
 }
+
+// GetLatestDiskusi godoc
+// @Summary      Ambil Pesan Diskusi Terbaru Global
+// @Description  Mengambil semua pesan terbaru di atas ID tertentu
+// @Tags         Diskusi
+// @Produce      json
+// @Security     BearerAuth
+// @Param        last_id query int true "Last Message ID"
+// @Success      200 {array} model.Diskusi
+// @Router       /api/diskusi/latest [get]
+func GetLatestDiskusi(c *fiber.Ctx) error {
+	lastID := c.Query("last_id", "0")
+	var diskusi []model.Diskusi
+
+	// Preload User dan Touring agar frontend tahu pesan ini dari grup mana
+	if err := config.DB.Preload("User").Preload("Touring").
+		Where("id > ?", lastID).
+		Order("id asc").
+		Find(&diskusi).Error; err != nil {
+		return c.Status(500).JSON(fiber.Map{"message": "Gagal memuat pesan terbaru"})
+	}
+
+	return c.JSON(diskusi)
+}
