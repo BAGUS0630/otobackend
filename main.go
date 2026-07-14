@@ -28,7 +28,7 @@ func main() {
 	// 2. Pasang Middleware Wajib
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*", // Nanti bisa diubah ke URL frontend setelah dideploy
+		AllowOrigins: "http://localhost:5173, https://otofrontend.vercel.app",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
 	}))
 
