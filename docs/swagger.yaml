@@ -14,6 +14,24 @@ definitions:
       user_id:
         type: integer
     type: object
+  model.LoginRequest:
+    properties:
+      password:
+        example: secret
+        type: string
+      username:
+        example: alice
+        type: string
+    type: object
+  model.PasswordChangeRequest:
+    properties:
+      new_password:
+        example: newpass
+        type: string
+      old_password:
+        example: oldpass
+        type: string
+    type: object
   model.Registration:
     properties:
       bike_model:
@@ -103,9 +121,7 @@ paths:
         name: password
         required: true
         schema:
-          additionalProperties:
-            type: string
-          type: object
+          $ref: '#/definitions/model.PasswordChangeRequest'
       produces:
       - application/json
       responses:
@@ -535,9 +551,7 @@ paths:
         name: login
         required: true
         schema:
-          additionalProperties:
-            type: string
-          type: object
+          $ref: '#/definitions/model.LoginRequest'
       produces:
       - application/json
       responses:

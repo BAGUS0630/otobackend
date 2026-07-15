@@ -16,3 +16,15 @@ type User struct {
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 }
+
+// LoginRequest represents payload for /login
+type LoginRequest struct {
+	Username string `json:"username" example:"alice"`
+	Password string `json:"password" example:"secret"`
+}
+
+// PasswordChangeRequest represents payload for /api/change-password
+type PasswordChangeRequest struct {
+	OldPassword string `json:"old_password" example:"oldpass"`
+	NewPassword string `json:"new_password" example:"newpass"`
+}
