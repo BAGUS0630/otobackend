@@ -67,7 +67,7 @@ func GetUserByID(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        profile  body  map[string]interface{}  true  "Data Profil"
+// @Param        profile  body  model.ProfileUpdateRequest  true  "Data Profil"
 // @Success      200  {object}  map[string]interface{}
 // @Failure      400  {object}  map[string]interface{}
 // @Router       /api/profile [put]
@@ -78,11 +78,7 @@ func UpdateProfile(c *fiber.Ctx) error {
 	}
 	userID := uint(userIDFloat)
 
-	var input struct {
-		FullName    string `json:"full_name"`
-		Email       string `json:"email"`
-		PhoneNumber string `json:"phone_number"`
-	}
+	var input model.ProfileUpdateRequest
 
 	if err := c.BodyParser(&input); err != nil {
 		return utils.RespondError(c, 400, "Input tidak valid", "INVALID_INPUT")
@@ -123,7 +119,7 @@ func UpdateProfile(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        password  body  map[string]string  true  "Password Konfirmasi"
+// @Param        password  body  model.AccountDeleteRequest  true  "Password Konfirmasi"
 // @Success      200  {object}  map[string]interface{}
 // @Failure      401  {object}  map[string]interface{}
 // @Router       /api/delete-account [delete]
@@ -134,9 +130,7 @@ func DeleteAccount(c *fiber.Ctx) error {
 	}
 	userID := uint(userIDFloat)
 
-	var input struct {
-		Password string `json:"password"`
-	}
+	var input model.AccountDeleteRequest
 
 	if err := c.BodyParser(&input); err != nil {
 		return utils.RespondError(c, 400, "Input tidak valid", "INVALID_INPUT")
