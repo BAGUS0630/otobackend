@@ -12,23 +12,27 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// RegisterRequest adalah format input untuk registrasi
+type RegisterRequest struct {
+	Username string `json:"username" example:"budi123"`
+	Password string `json:"password" example:"rahasia"`
+	Role     string `json:"role" example:"user"`
+}
+
 // Register godoc
 // @Summary      Registrasi Akun Baru
 // @Description  Membuat akun user atau admin baru untuk platform OtoMeet
 // @Tags         Authentication
 // @Accept       json
 // @Produce      json
-// @Param        user  body      model.User  true  "Data Akun"
-// @Success      201   {object}  map[string]interface{}
-// @Failure      400   {object}  map[string]interface{}
+// @Param        user  body      RegisterRequest  true  "Data Akun"
+// @Success      201   {object}  utils.SwaggerBasicResponse
+// @Failure      400   {object}  utils.SwaggerBasicResponse
+// @Failure      500   {object}  utils.SwaggerBasicResponse
 // @Router       /register [post]
 func Register(c *fiber.Ctx) error {
 	// 1. Buat struct penampung sementara khusus input JSON register
-	var input struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-		Role     string `json:"role"`
-	}
+	var input RegisterRequest
 
 	// 2. Baca data request body ke dalam struct temporary
 	if err := c.BodyParser(&input); err != nil {
@@ -75,8 +79,10 @@ func Register(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Param        login  body      model.LoginRequest  true  "Username dan Password"
-// @Success      200    {object}  map[string]interface{}
-// @Failure      401    {object}  map[string]interface{}
+// @Success      200    {object}  utils.SwaggerBasicResponse
+// @Failure      400    {object}  utils.SwaggerBasicResponse
+// @Failure      401    {object}  utils.Swagger401Response
+// @Failure      500    {object}  utils.SwaggerBasicResponse
 // @Router       /login [post]
 func Login(c *fiber.Ctx) error {
 	var input model.LoginRequest
@@ -124,8 +130,11 @@ func Login(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        password  body      model.PasswordChangeRequest  true  "Password Lama dan Baru"
-// @Success      200       {object}  map[string]interface{}
-// @Failure      401       {object}  map[string]interface{}
+// @Success      200       {object}  utils.SwaggerBasicResponse
+// @Failure      400       {object}  utils.SwaggerBasicResponse
+// @Failure      401       {object}  utils.Swagger401Response
+// @Failure      404       {object}  utils.SwaggerBasicResponse
+// @Failure      500       {object}  utils.SwaggerBasicResponse
 // @Router       /api/change-password [put]
 func ChangePassword(c *fiber.Ctx) error {
 	// Ambil data user_id dari middleware JWT

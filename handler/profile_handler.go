@@ -9,6 +9,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// UpdateProfileRequest adalah format input untuk update profil
+type UpdateProfileRequest struct {
+	FullName    string `json:"full_name" example:"Budi Santoso"`
+	Email       string `json:"email" example:"budi@example.com"`
+	PhoneNumber string `json:"phone_number" example:"08123456789"`
+}
+
+// DeleteAccountRequest adalah format input untuk hapus akun
+type DeleteAccountRequest struct {
+	Password string `json:"password" example:"rahasia123"`
+}
+
 // GetProfile godoc
 // @Summary      Lihat Profil User
 // @Description  Mengambil data profil user yang sedang login
@@ -16,7 +28,9 @@ import (
 // @Produce      json
 // @Security     BearerAuth
 // @Success      200  {object}  model.User
-// @Failure      404  {object}  map[string]interface{}
+// @Failure      401  {object}  utils.Swagger401Response
+// @Failure      404  {object}  utils.SwaggerBasicResponse
+// @Failure      500  {object}  utils.SwaggerBasicResponse
 // @Router       /api/me [get]
 func GetProfile(c *fiber.Ctx) error {
 	userIDFloat, ok := c.Locals("user_id").(float64)
@@ -41,7 +55,9 @@ func GetProfile(c *fiber.Ctx) error {
 // @Security     BearerAuth
 // @Param        id   path  int  true  "User ID"
 // @Success      200  {object}  map[string]interface{}
-// @Failure      404  {object}  map[string]interface{}
+// @Failure      401  {object}  utils.Swagger401Response
+// @Failure      404  {object}  utils.SwaggerBasicResponse
+// @Failure      500  {object}  utils.SwaggerBasicResponse
 // @Router       /api/user/{id} [get]
 func GetUserByID(c *fiber.Ctx) error {
 	userID := c.Params("id")
@@ -68,9 +84,12 @@ func GetUserByID(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        profile  body  map[string]interface{}  true  "Data Profil"
-// @Success      200  {object}  map[string]interface{}
-// @Failure      400  {object}  map[string]interface{}
+// @Param        profile  body  UpdateProfileRequest  true  "Data Profil"
+// @Success      200  {object}  utils.SwaggerBasicResponse
+// @Failure      400  {object}  utils.SwaggerBasicResponse
+// @Failure      401  {object}  utils.Swagger401Response
+// @Failure      404  {object}  utils.SwaggerBasicResponse
+// @Failure      500  {object}  utils.SwaggerBasicResponse
 // @Router       /api/profile [put]
 func UpdateProfile(c *fiber.Ctx) error {
 	userIDFloat, ok := c.Locals("user_id").(float64)
@@ -79,11 +98,7 @@ func UpdateProfile(c *fiber.Ctx) error {
 	}
 	userID := uint(userIDFloat)
 
-	var input struct {
-		FullName    string `json:"full_name"`
-		Email       string `json:"email"`
-		PhoneNumber string `json:"phone_number"`
-	}
+	var input UpdateProfileRequest
 
 	if err := c.BodyParser(&input); err != nil {
 		return utils.RespondError(c, 400, "Input tidak valid", "INVALID_INPUT")
@@ -124,9 +139,12 @@ func UpdateProfile(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        password  body  map[string]string  true  "Password Konfirmasi"
-// @Success      200  {object}  map[string]interface{}
-// @Failure      401  {object}  map[string]interface{}
+// @Param        password  body  DeleteAccountRequest  true  "Password Konfirmasi"
+// @Success      200  {object}  utils.SwaggerBasicResponse
+// @Failure      400  {object}  utils.SwaggerBasicResponse
+// @Failure      401  {object}  utils.Swagger401Response
+// @Failure      404  {object}  utils.SwaggerBasicResponse
+// @Failure      500  {object}  utils.SwaggerBasicResponse
 // @Router       /api/delete-account [delete]
 func DeleteAccount(c *fiber.Ctx) error {
 	userIDFloat, ok := c.Locals("user_id").(float64)
@@ -135,9 +153,7 @@ func DeleteAccount(c *fiber.Ctx) error {
 	}
 	userID := uint(userIDFloat)
 
-	var input struct {
-		Password string `json:"password"`
-	}
+	var input DeleteAccountRequest
 
 	if err := c.BodyParser(&input); err != nil {
 		return utils.RespondError(c, 400, "Input tidak valid", "INVALID_INPUT")

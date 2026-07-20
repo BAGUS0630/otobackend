@@ -8,16 +8,32 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// VehicleRequest adalah format input untuk menambah kendaraan
+type VehicleRequest struct {
+	BikeModel    string `json:"bike_model" example:"Honda PCX"`
+	LicensePlate string `json:"license_plate" example:"D 5678 EFG"`
+}
+
+// AddVehicle godoc
+// @Summary      Tambah Kendaraan
+// @Description  Menambahkan kendaraan baru ke garasi user
+// @Tags         Vehicle
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        vehicle  body      VehicleRequest  true  "Data Kendaraan"
+// @Success      201      {object}  utils.SwaggerBasicResponse
+// @Failure      400      {object}  utils.SwaggerBasicResponse
+// @Failure      401      {object}  utils.Swagger401Response
+// @Failure      500      {object}  utils.SwaggerBasicResponse
+// @Router       /api/vehicles [post]
 func AddVehicle(c *fiber.Ctx) error {
 	userIDFloat, ok := c.Locals("user_id").(float64)
 	if !ok {
 		return utils.RespondError(c, 401, "Sesi login tidak valid", "INVALID_SESSION")
 	}
 
-	var input struct {
-		BikeModel    string `json:"bike_model"`
-		LicensePlate string `json:"license_plate"`
-	}
+	var input VehicleRequest
 
 	if err := c.BodyParser(&input); err != nil {
 		return utils.RespondError(c, 400, "Input tidak valid", "INVALID_INPUT")
@@ -36,6 +52,16 @@ func AddVehicle(c *fiber.Ctx) error {
 	return utils.RespondSuccess(c, 201, "Kendaraan berhasil ditambahkan", vehicle)
 }
 
+// GetMyVehicles godoc
+// @Summary      Lihat Garasi Kendaraan
+// @Description  Mengambil daftar kendaraan milik user yang sedang login
+// @Tags         Vehicle
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  utils.Swagger401Response
+// @Failure      500      {object}  utils.SwaggerBasicResponse
+// @Router       /api/vehicles [get]
 func GetMyVehicles(c *fiber.Ctx) error {
 	userIDFloat, ok := c.Locals("user_id").(float64)
 	if !ok {
@@ -51,6 +77,18 @@ func GetMyVehicles(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"data": vehicles})
 }
 
+// DeleteVehicle godoc
+// @Summary      Hapus Kendaraan
+// @Description  Menghapus kendaraan dari garasi berdasarkan ID
+// @Tags         Vehicle
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id       path      int  true  "Vehicle ID"
+// @Success      200      {object}  utils.SwaggerBasicResponse
+// @Failure      401      {object}  utils.Swagger401Response
+// @Failure      404      {object}  utils.SwaggerBasicResponse
+// @Failure      500      {object}  utils.SwaggerBasicResponse
+// @Router       /api/vehicles/{id} [delete]
 func DeleteVehicle(c *fiber.Ctx) error {
 	userIDFloat, ok := c.Locals("user_id").(float64)
 	if !ok {

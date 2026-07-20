@@ -5,7 +5,13 @@ import (
 	"otomeet-backend/model"
 
 	"github.com/gofiber/fiber/v2"
+	_ "otomeet-backend/utils"
 )
+
+// DiskusiRequest adalah format input untuk pesan diskusi
+type DiskusiRequest struct {
+	Message string `json:"message" example:"Halo semuanya, kapan kita kumpul?"`
+}
 
 // GetDiskusiByTouring godoc
 // @Summary      Ambil Diskusi Touring
@@ -15,6 +21,8 @@ import (
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Touring ID"
 // @Success      200  {array}   model.Diskusi
+// @Failure      401  {object}  utils.Swagger401Response
+// @Failure      500  {object}  utils.SwaggerBasicResponse
 // @Router       /api/touring/{id}/diskusi [get]
 func GetDiskusiByTouring(c *fiber.Ctx) error {
 	touringID := c.Params("id")
@@ -35,9 +43,13 @@ func GetDiskusiByTouring(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id       path      int            true  "Touring ID"
-// @Param        diskusi  body      model.Diskusi  true  "Pesan Diskusi"
-// @Success      201      {object}  map[string]interface{}
+// @Param        id       path      int             true  "Touring ID"
+// @Param        diskusi  body      DiskusiRequest  true  "Pesan Diskusi"
+// @Success      201      {object}  utils.SwaggerBasicResponse
+// @Failure      400      {object}  utils.SwaggerBasicResponse
+// @Failure      401      {object}  utils.Swagger401Response
+// @Failure      404      {object}  utils.SwaggerBasicResponse
+// @Failure      500      {object}  utils.SwaggerBasicResponse
 // @Router       /api/touring/{id}/diskusi [post]
 func CreateDiskusi(c *fiber.Ctx) error {
 	touringID := c.Params("id")
@@ -48,9 +60,7 @@ func CreateDiskusi(c *fiber.Ctx) error {
 		return c.Status(401).JSON(fiber.Map{"message": "Sesi tidak valid, silakan login ulang"})
 	}
 
-	var input struct {
-		Message string `json:"message"`
-	}
+	var input DiskusiRequest
 
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(400).JSON(fiber.Map{"message": "Input tidak valid"})
@@ -90,6 +100,8 @@ func CreateDiskusi(c *fiber.Ctx) error {
 // @Security     BearerAuth
 // @Param        last_id query int true "Last Message ID"
 // @Success      200 {array} model.Diskusi
+// @Failure      401 {object} utils.Swagger401Response
+// @Failure      500 {object} utils.SwaggerBasicResponse
 // @Router       /api/diskusi/latest [get]
 func GetLatestDiskusi(c *fiber.Ctx) error {
 	lastID := c.Query("last_id", "0")
@@ -113,9 +125,14 @@ func GetLatestDiskusi(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id       path      int            true  "ID Diskusi"
-// @Param        diskusi  body      model.Diskusi  true  "Teks Pesan Baru"
-// @Success      200      {object}  map[string]interface{}
+// @Param        id       path      int             true  "ID Diskusi"
+// @Param        diskusi  body      DiskusiRequest  true  "Teks Pesan Baru"
+// @Success      200      {object}  utils.SwaggerBasicResponse
+// @Failure      400      {object}  utils.SwaggerBasicResponse
+// @Failure      401      {object}  utils.Swagger401Response
+// @Failure      403      {object}  utils.Swagger403Response
+// @Failure      404      {object}  utils.SwaggerBasicResponse
+// @Failure      500      {object}  utils.SwaggerBasicResponse
 // @Router       /api/diskusi/{id} [put]
 func UpdateDiskusi(c *fiber.Ctx) error {
 	diskusiID := c.Params("id")
@@ -125,9 +142,7 @@ func UpdateDiskusi(c *fiber.Ctx) error {
 	}
 	userID := uint(userIDFloat)
 
-	var input struct {
-		Message string `json:"message"`
-	}
+	var input DiskusiRequest
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(400).JSON(fiber.Map{"message": "Input tidak valid"})
 	}
@@ -159,7 +174,11 @@ func UpdateDiskusi(c *fiber.Ctx) error {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        id  path      int  true  "ID Diskusi"
-// @Success      200 {object}  map[string]string
+// @Success      200 {object}  utils.SwaggerBasicResponse
+// @Failure      401 {object}  utils.Swagger401Response
+// @Failure      403 {object}  utils.Swagger403Response
+// @Failure      404 {object}  utils.SwaggerBasicResponse
+// @Failure      500 {object}  utils.SwaggerBasicResponse
 // @Router       /api/diskusi/{id} [delete]
 func DeleteDiskusi(c *fiber.Ctx) error {
 	diskusiID := c.Params("id")

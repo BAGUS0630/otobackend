@@ -4,9 +4,24 @@ import (
 	"fmt"
 	"otomeet-backend/config"
 	"otomeet-backend/model"
+	_ "otomeet-backend/utils"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+// TouringRequest adalah format input untuk create dan update touring
+type TouringRequest struct {
+	NamaTouring string `json:"nama_touring" example:"Touring Lembang"`
+	Tujuan      string `json:"tujuan" example:"Lembang, Bandung"`
+	Tanggal     string `json:"tanggal" example:"2026-08-15"`
+	Waktu       string `json:"waktu" example:"08:00"`
+	Deskripsi   string `json:"deskripsi" example:"Touring santai akhir pekan"`
+	Kuota       int    `json:"kuota" example:"50"`
+	ImageURL    string `json:"image_url" example:"https://example.com/image.jpg"`
+	LokasiAwal  string `json:"lokasi_awal" example:"Gasibu"`
+	LokasiAkhir string `json:"lokasi_akhir" example:"Lembang Park"`
+	HargaTiket  int    `json:"harga_tiket" example:"0"`
+}
 
 type TouringResponse struct {
 	model.Touring
@@ -22,7 +37,9 @@ type TouringResponse struct {
 // @Param        page     query  int     false  "Nomor halaman (default: 1)"
 // @Param        limit    query  int     false  "Jumlah data per halaman (default: 10)"
 // @Param        search   query  string  false  "Cari berdasarkan nama atau tujuan touring"
-// @Success      200      {object}   map[string]interface{}
+// @Success      200      {object}  map[string]interface{}
+// @Failure      401      {object}  utils.Swagger401Response
+// @Failure      500      {object}  utils.SwaggerBasicResponse
 // @Router       /api/touring [get]
 func GetAllTourings(c *fiber.Ctx) error {
 	// Default pagination values
@@ -101,6 +118,8 @@ func GetAllTourings(c *fiber.Ctx) error {
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Touring ID"
 // @Success      200  {object}  model.Touring
+// @Failure      401  {object}  utils.Swagger401Response
+// @Failure      404  {object}  utils.SwaggerBasicResponse
 // @Router       /api/touring/{id} [get]
 func GetTouringByID(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -118,18 +137,35 @@ func GetTouringByID(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        touring  body      model.Touring  true  "Data Agenda"
-// @Success      201      {object}  map[string]interface{}
+// @Param        touring  body      TouringRequest  true  "Data Agenda"
+// @Success      201      {object}  utils.SwaggerBasicResponse
+// @Failure      400      {object}  utils.SwaggerBasicResponse
+// @Failure      401      {object}  utils.Swagger401Response
+// @Failure      403      {object}  utils.Swagger403Response
+// @Failure      500      {object}  utils.SwaggerBasicResponse
 // @Router       /api/touring [post]
 func CreateTouring(c *fiber.Ctx) error {
-	var touring model.Touring
-	if err := c.BodyParser(&touring); err != nil {
+	var input TouringRequest
+	if err := c.BodyParser(&input); err != nil {
 		return c.Status(400).JSON(fiber.Map{"message": "Input tidak valid"})
 	}
 
 	// Validasi Backend[cite: 1]
-	if touring.NamaTouring == "" || touring.Tujuan == "" || touring.Kuota <= 0 {
+	if input.NamaTouring == "" || input.Tujuan == "" || input.Kuota <= 0 {
 		return c.Status(400).JSON(fiber.Map{"message": "Field wajib diisi dan kuota tidak boleh negatif"})
+	}
+
+	touring := model.Touring{
+		NamaTouring: input.NamaTouring,
+		Tujuan:      input.Tujuan,
+		Tanggal:     input.Tanggal,
+		Waktu:       input.Waktu,
+		Deskripsi:   input.Deskripsi,
+		Kuota:       input.Kuota,
+		ImageURL:    input.ImageURL,
+		LokasiAwal:  input.LokasiAwal,
+		LokasiAkhir: input.LokasiAkhir,
+		HargaTiket:  input.HargaTiket,
 	}
 
 	if err := config.DB.Create(&touring).Error; err != nil {
@@ -146,9 +182,13 @@ func CreateTouring(c *fiber.Ctx) error {
 // @Accept       json
 // @Produce      json
 // @Security     BearerAuth
-// @Param        id       path      int            true  "Touring ID"
-// @Param        touring  body      model.Touring  true  "Data Perubahan"
-// @Success      200      {object}  map[string]interface{}
+// @Param        id       path      int             true  "Touring ID"
+// @Param        touring  body      TouringRequest  true  "Data Perubahan"
+// @Success      200      {object}  utils.SwaggerBasicResponse
+// @Failure      400      {object}  utils.SwaggerBasicResponse
+// @Failure      401      {object}  utils.Swagger401Response
+// @Failure      403      {object}  utils.Swagger403Response
+// @Failure      404      {object}  utils.SwaggerBasicResponse
 // @Router       /api/touring/{id} [put]
 func UpdateTouring(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -157,13 +197,24 @@ func UpdateTouring(c *fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"message": "Data tidak ditemukan"})
 	}
 
-	var input model.Touring
+	var input TouringRequest
 	if err := c.BodyParser(&input); err != nil {
 		return c.Status(400).JSON(fiber.Map{"message": "Input tidak valid"})
 	}
 
 	// Update data menggunakan GORM
-	config.DB.Model(&touring).Updates(input)
+	config.DB.Model(&touring).Updates(model.Touring{
+		NamaTouring: input.NamaTouring,
+		Tujuan:      input.Tujuan,
+		Tanggal:     input.Tanggal,
+		Waktu:       input.Waktu,
+		Deskripsi:   input.Deskripsi,
+		Kuota:       input.Kuota,
+		ImageURL:    input.ImageURL,
+		LokasiAwal:  input.LokasiAwal,
+		LokasiAkhir: input.LokasiAkhir,
+		HargaTiket:  input.HargaTiket,
+	})
 	return c.JSON(fiber.Map{"message": "Jadwal touring berhasil diperbarui", "data": touring})
 }
 
@@ -173,7 +224,10 @@ func UpdateTouring(c *fiber.Ctx) error {
 // @Tags         Touring
 // @Security     BearerAuth
 // @Param        id   path      int  true  "Touring ID"
-// @Success      200  {object}  map[string]interface{}
+// @Success      200  {object}  utils.SwaggerBasicResponse
+// @Failure      401  {object}  utils.Swagger401Response
+// @Failure      403  {object}  utils.Swagger403Response
+// @Failure      404  {object}  utils.SwaggerBasicResponse
 // @Router       /api/touring/{id} [delete]
 func DeleteTouring(c *fiber.Ctx) error {
 	id := c.Params("id")

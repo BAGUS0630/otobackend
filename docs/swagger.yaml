@@ -1,4 +1,94 @@
 definitions:
+  handler.DeleteAccountRequest:
+    properties:
+      password:
+        example: rahasia123
+        type: string
+    type: object
+  handler.DiskusiRequest:
+    properties:
+      message:
+        example: Halo semuanya, kapan kita kumpul?
+        type: string
+    type: object
+  handler.RegisterRequest:
+    properties:
+      password:
+        example: rahasia
+        type: string
+      role:
+        example: user
+        type: string
+      username:
+        example: budi123
+        type: string
+    type: object
+  handler.RegisterTouringRequest:
+    properties:
+      bike_model:
+        example: Yamaha NMAX 155
+        type: string
+      license_plate:
+        example: D 1234 ABC
+        type: string
+      touring_id:
+        example: 1
+        type: integer
+    type: object
+  handler.TouringRequest:
+    properties:
+      deskripsi:
+        example: Touring santai akhir pekan
+        type: string
+      harga_tiket:
+        example: 0
+        type: integer
+      image_url:
+        example: https://example.com/image.jpg
+        type: string
+      kuota:
+        example: 50
+        type: integer
+      lokasi_akhir:
+        example: Lembang Park
+        type: string
+      lokasi_awal:
+        example: Gasibu
+        type: string
+      nama_touring:
+        example: Touring Lembang
+        type: string
+      tanggal:
+        example: "2026-08-15"
+        type: string
+      tujuan:
+        example: Lembang, Bandung
+        type: string
+      waktu:
+        example: "08:00"
+        type: string
+    type: object
+  handler.UpdateProfileRequest:
+    properties:
+      email:
+        example: budi@example.com
+        type: string
+      full_name:
+        example: Budi Santoso
+        type: string
+      phone_number:
+        example: "08123456789"
+        type: string
+    type: object
+  handler.VehicleRequest:
+    properties:
+      bike_model:
+        example: Honda PCX
+        type: string
+      license_plate:
+        example: D 5678 EFG
+        type: string
+    type: object
   model.Diskusi:
     properties:
       created_at:
@@ -133,6 +223,30 @@ definitions:
       user_id:
         type: integer
     type: object
+  utils.Swagger401Response:
+    properties:
+      message:
+        example: token tidak valid atau sudah expired
+        type: string
+    type: object
+  utils.Swagger403Response:
+    properties:
+      message:
+        example: user tidak memiliki akses untuk fitur ini
+        type: string
+    type: object
+  utils.SwaggerBasicResponse:
+    properties:
+      data:
+        example: string
+        type: string
+      error:
+        example: detail error
+        type: string
+      message:
+        example: detail pesan
+        type: string
+    type: object
 info:
   contact: {}
   description: Ini adalah dokumentasi API untuk platform OtoMeet.
@@ -157,13 +271,23 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
         "401":
           description: Unauthorized
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.Swagger401Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Ubah Password User
@@ -180,22 +304,30 @@ paths:
         name: password
         required: true
         schema:
-          additionalProperties:
-            type: string
-          type: object
+          $ref: '#/definitions/handler.DeleteAccountRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
         "401":
           description: Unauthorized
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.Swagger401Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Hapus Akun
@@ -237,9 +369,23 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.Swagger403Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Hapus Pesan Diskusi
@@ -261,15 +407,34 @@ paths:
         name: diskusi
         required: true
         schema:
-          $ref: '#/definitions/model.Diskusi'
+          $ref: '#/definitions/handler.DiskusiRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.Swagger403Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Edit Pesan Diskusi
@@ -293,6 +458,14 @@ paths:
             items:
               $ref: '#/definitions/model.Diskusi'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Ambil Pesan Diskusi Terbaru Global
@@ -308,11 +481,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Lihat Profil User
@@ -331,6 +511,14 @@ paths:
             items:
               $ref: '#/definitions/model.Registration'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Riwayat Touring Saya
@@ -347,21 +535,30 @@ paths:
         name: profile
         required: true
         schema:
-          additionalProperties: true
-          type: object
+          $ref: '#/definitions/handler.UpdateProfileRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Update Profil User
@@ -378,15 +575,30 @@ paths:
         name: register
         required: true
         schema:
-          $ref: '#/definitions/model.Registration'
+          $ref: '#/definitions/handler.RegisterTouringRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Gabung Agenda Touring
@@ -417,6 +629,14 @@ paths:
           schema:
             additionalProperties: true
             type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Lihat Semua Jadwal Touring
@@ -432,15 +652,30 @@ paths:
         name: touring
         required: true
         schema:
-          $ref: '#/definitions/model.Touring'
+          $ref: '#/definitions/handler.TouringRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.Swagger403Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Buat Agenda Touring Baru
@@ -459,8 +694,19 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.Swagger403Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Hapus Jadwal Touring
@@ -481,6 +727,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/model.Touring'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Detail Jadwal Touring
@@ -501,15 +755,30 @@ paths:
         name: touring
         required: true
         schema:
-          $ref: '#/definitions/model.Touring'
+          $ref: '#/definitions/handler.TouringRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.Swagger403Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Edit Jadwal Touring
@@ -533,6 +802,14 @@ paths:
             items:
               $ref: '#/definitions/model.Diskusi'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Ambil Diskusi Touring
@@ -553,15 +830,30 @@ paths:
         name: diskusi
         required: true
         schema:
-          $ref: '#/definitions/model.Diskusi'
+          $ref: '#/definitions/handler.DiskusiRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Kirim Komentar Diskusi
@@ -586,6 +878,18 @@ paths:
             items:
               $ref: '#/definitions/model.Registration'
             type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/utils.Swagger403Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Daftar Peserta Touring
@@ -637,16 +941,115 @@ paths:
           schema:
             additionalProperties: true
             type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
         "404":
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       security:
       - BearerAuth: []
       summary: Lihat Profil User Lain
       tags:
       - User Profile
+  /api/vehicles:
+    get:
+      description: Mengambil daftar kendaraan milik user yang sedang login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: Lihat Garasi Kendaraan
+      tags:
+      - Vehicle
+    post:
+      consumes:
+      - application/json
+      description: Menambahkan kendaraan baru ke garasi user
+      parameters:
+      - description: Data Kendaraan
+        in: body
+        name: vehicle
+        required: true
+        schema:
+          $ref: '#/definitions/handler.VehicleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: Tambah Kendaraan
+      tags:
+      - Vehicle
+  /api/vehicles/{id}:
+    delete:
+      description: Menghapus kendaraan dari garasi berdasarkan ID
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Swagger401Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+      security:
+      - BearerAuth: []
+      summary: Hapus Kendaraan
+      tags:
+      - Vehicle
   /login:
     post:
       consumes:
@@ -665,13 +1068,19 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
         "401":
           description: Unauthorized
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.Swagger401Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       summary: Masuk Aplikasi (Login)
       tags:
       - Authentication
@@ -686,20 +1095,22 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/model.User'
+          $ref: '#/definitions/handler.RegisterRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.SwaggerBasicResponse'
       summary: Registrasi Akun Baru
       tags:
       - Authentication
