@@ -148,6 +148,125 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/diskusi/latest": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil semua pesan terbaru di atas ID tertentu",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Diskusi"
+                ],
+                "summary": "Ambil Pesan Diskusi Terbaru Global",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Last Message ID",
+                        "name": "last_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Diskusi"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/diskusi/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Memperbarui teks pesan diskusi yang sudah ada. Hanya pemilik pesan yang bisa mengeditnya.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Diskusi"
+                ],
+                "summary": "Edit Pesan Diskusi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Diskusi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Teks Pesan Baru",
+                        "name": "diskusi",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Diskusi"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menghapus pesan diskusi. Hanya pemilik pesan yang bisa menghapusnya.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Diskusi"
+                ],
+                "summary": "Hapus Pesan Diskusi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Diskusi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/me": {
             "get": {
                 "security": [
@@ -655,6 +774,11 @@ const docTemplate = `{
         },
         "/api/user/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Mengambil data profil user publik berdasarkan user ID",
                 "produces": [
                     "application/json"
@@ -788,11 +912,20 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "is_edited": {
+                    "type": "boolean"
+                },
                 "message": {
                     "type": "string"
                 },
+                "touring": {
+                    "$ref": "#/definitions/model.Touring"
+                },
                 "touring_id": {
                     "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 },
                 "user": {
                     "$ref": "#/definitions/model.User"
@@ -816,6 +949,9 @@ const docTemplate = `{
                 },
                 "registered_at": {
                     "type": "string"
+                },
+                "touring": {
+                    "$ref": "#/definitions/model.Touring"
                 },
                 "touring_id": {
                     "type": "integer"
@@ -908,6 +1044,38 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                },
+                "vehicles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Vehicle"
+                    }
+                }
+            }
+        },
+        "model.Vehicle": {
+            "type": "object",
+            "properties": {
+                "bike_model": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "license_plate": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         }

@@ -38,6 +38,7 @@ func GetProfile(c *fiber.Ctx) error {
 // @Description  Mengambil data profil user publik berdasarkan user ID
 // @Tags         User Profile
 // @Produce      json
+// @Security     BearerAuth
 // @Param        id   path  int  true  "User ID"
 // @Success      200  {object}  map[string]interface{}
 // @Failure      404  {object}  map[string]interface{}

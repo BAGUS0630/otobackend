@@ -5,10 +5,16 @@ definitions:
         type: string
       id:
         type: integer
+      is_edited:
+        type: boolean
       message:
         type: string
+      touring:
+        $ref: '#/definitions/model.Touring'
       touring_id:
         type: integer
+      updated_at:
+        type: string
       user:
         $ref: '#/definitions/model.User'
       user_id:
@@ -24,6 +30,8 @@ definitions:
         type: string
       registered_at:
         type: string
+      touring:
+        $ref: '#/definitions/model.Touring'
       touring_id:
         type: integer
       user:
@@ -85,6 +93,27 @@ definitions:
         type: string
       username:
         type: string
+      vehicles:
+        items:
+          $ref: '#/definitions/model.Vehicle'
+        type: array
+    type: object
+  model.Vehicle:
+    properties:
+      bike_model:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      license_plate:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/model.User'
+      user_id:
+        type: integer
     type: object
 info:
   contact: {}
@@ -177,6 +206,82 @@ paths:
       summary: Hapus Foto Profil
       tags:
       - User Profile
+  /api/diskusi/{id}:
+    delete:
+      description: Menghapus pesan diskusi. Hanya pemilik pesan yang bisa menghapusnya.
+      parameters:
+      - description: ID Diskusi
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Hapus Pesan Diskusi
+      tags:
+      - Diskusi
+    put:
+      consumes:
+      - application/json
+      description: Memperbarui teks pesan diskusi yang sudah ada. Hanya pemilik pesan
+        yang bisa mengeditnya.
+      parameters:
+      - description: ID Diskusi
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Teks Pesan Baru
+        in: body
+        name: diskusi
+        required: true
+        schema:
+          $ref: '#/definitions/model.Diskusi'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Edit Pesan Diskusi
+      tags:
+      - Diskusi
+  /api/diskusi/latest:
+    get:
+      description: Mengambil semua pesan terbaru di atas ID tertentu
+      parameters:
+      - description: Last Message ID
+        in: query
+        name: last_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Diskusi'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Ambil Pesan Diskusi Terbaru Global
+      tags:
+      - Diskusi
   /api/me:
     get:
       description: Mengambil data profil user yang sedang login
@@ -521,6 +626,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Lihat Profil User Lain
       tags:
       - User Profile
