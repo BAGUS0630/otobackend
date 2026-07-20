@@ -1,0 +1,1417 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "Dokumentasi API backend OtoMeet menggunakan Golang Fiber, Supabase (PostgreSQL), dan JWT.",
+        "title": "API OtoMeet",
+        "contact": {
+            "name": "Praktikum Pemrograman III",
+            "email": "praktikum@example.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/api/change-password": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengubah password user yang sedang aktif login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Ubah Password User",
+                "parameters": [
+                    {
+                        "description": "Password Lama dan Baru",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ChangePasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/diskusi/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil detail satu komentar diskusi berdasarkan ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Diskusi"
+                ],
+                "summary": "Detail Komentar Diskusi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Diskusi ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Diskusi"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengubah pesan komentar diskusi yang pernah dikirim sebelumnya oleh user bersangkutan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Diskusi"
+                ],
+                "summary": "Ubah Pesan Diskusi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Diskusi ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data Perubahan Pesan",
+                        "name": "diskusi",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Diskusi"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menghapus pesan komentar diskusi berdasarkan ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Diskusi"
+                ],
+                "summary": "Hapus Pesan Diskusi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Diskusi ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil data profil user yang sedang login",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Profile"
+                ],
+                "summary": "Lihat Profil User",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.User"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/my-touring": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Melihat daftar agenda touring apa saja yang pernah diikuti oleh user login saat ini",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Registration"
+                ],
+                "summary": "Riwayat Touring Saya",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Registration"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/profile": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengubah data profil user yang sedang login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Profile"
+                ],
+                "summary": "Update Profil User",
+                "parameters": [
+                    {
+                        "description": "Data Profil",
+                        "name": "profile",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.UpdateProfileRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register-touring": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mendaftarkan diri dan kendaraan ke dalam salah satu jadwal touring",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Registration"
+                ],
+                "summary": "Gabung Agenda Touring",
+                "parameters": [
+                    {
+                        "description": "Data Kendaraan",
+                        "name": "register",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.JoinTouringRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/stats": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil data jumlah user, touring, dan pendaftar untuk dashboard",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Ambil Statistik Dashboard",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.DashboardStatsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/touring": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil semua daftar agenda touring komunitas dengan pagination dan search (User \u0026 Admin)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Touring"
+                ],
+                "summary": "Lihat Semua Jadwal Touring",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Nomor halaman (default: 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Jumlah data per halaman (default: 10)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Cari berdasarkan nama atau tujuan touring",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kolom untuk diurutkan (default: created_at)",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Arah urutan (asc/desc, default: desc)",
+                        "name": "order",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.TouringListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menambahkan jadwal touring baru ke database (Khusus Admin Only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Touring"
+                ],
+                "summary": "Buat Agenda Touring Baru",
+                "parameters": [
+                    {
+                        "description": "Data Agenda",
+                        "name": "touring",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateTouringRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/touring/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil detail satu agenda touring berdasarkan ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Touring"
+                ],
+                "summary": "Detail Jadwal Touring",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Touring ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Touring"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengubah data agenda touring berdasarkan ID (Khusus Admin Only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Touring"
+                ],
+                "summary": "Edit Jadwal Touring",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Touring ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data Perubahan",
+                        "name": "touring",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CreateTouringRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menghapus agenda touring berdasarkan ID (Khusus Admin Only)",
+                "tags": [
+                    "Touring"
+                ],
+                "summary": "Hapus Jadwal Touring",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Touring ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/touring/{id}/diskusi": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil semua komentar/diskusi untuk suatu agenda touring",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Diskusi"
+                ],
+                "summary": "Ambil Diskusi Touring",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Touring ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Diskusi"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menambahkan komentar baru ke dalam agenda touring tertentu",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Diskusi"
+                ],
+                "summary": "Kirim Komentar Diskusi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Touring ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Pesan Diskusi",
+                        "name": "diskusi",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Diskusi"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/touring/{id}/peserta": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin dapat melihat semua peserta yang mendaftar pada suatu agenda touring",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Registration"
+                ],
+                "summary": "Daftar Peserta Touring",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Touring ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Registration"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/touring/{id}/peserta/{peserta_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin menghapus peserta dari suatu agenda touring",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Registration"
+                ],
+                "summary": "Keluarkan Peserta Touring",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Touring ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Registration ID",
+                        "name": "peserta_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/vehicles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil daftar kendaraan milik user yang sedang login",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Lihat Kendaraan Saya",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Vehicle"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menyimpan data motor baru milik user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Tambah Kendaraan",
+                "parameters": [
+                    {
+                        "description": "Data Kendaraan",
+                        "name": "vehicle",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Vehicle"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/vehicles/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menghapus kendaraan berdasarkan ID (hanya milik user tersebut)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Hapus Kendaraan",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "Autentikasi akun untuk mendapatkan token JWT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Masuk Aplikasi (Login)",
+                "parameters": [
+                    {
+                        "description": "Username dan Password",
+                        "name": "login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.LoginResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "description": "Membuat akun user atau admin baru untuk platform OtoMeet",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Registrasi Akun Baru",
+                "parameters": [
+                    {
+                        "description": "Data Akun",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil data publik user berdasarkan ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Profile"
+                ],
+                "summary": "Get User By ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/account": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menghapus akun user yang sedang login setelah verifikasi password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Profile"
+                ],
+                "summary": "Hapus Akun User",
+                "parameters": [
+                    {
+                        "description": "Password konfirmasi",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/upload-photo": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengupload foto profil user ke Supabase Storage",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Profile"
+                ],
+                "summary": "Upload Foto Profil",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "File Foto Profil",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/delete-photo": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menghapus foto profil user dari Supabase Storage",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User Profile"
+                ],
+                "summary": "Hapus Foto Profil",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.SuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.ChangePasswordRequest": {
+            "type": "object",
+            "properties": {
+                "new_password": {
+                    "type": "string"
+                },
+                "old_password": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CreateTouringRequest": {
+            "type": "object",
+            "properties": {
+                "deskripsi": {
+                    "type": "string",
+                    "example": "Gathering komunitas menikmati sunset"
+                },
+                "harga_tiket": {
+                    "type": "integer",
+                    "example": 15000
+                },
+                "image_url": {
+                    "type": "string",
+                    "example": "https://example.com/image.jpg"
+                },
+                "kuota": {
+                    "type": "integer",
+                    "example": 30
+                },
+                "lokasi_akhir": {
+                    "type": "string",
+                    "example": "Bantul"
+                },
+                "lokasi_awal": {
+                    "type": "string",
+                    "example": "Yogyakarta City"
+                },
+                "nama_touring": {
+                    "type": "string",
+                    "example": "JOGJA FUN TOURING"
+                },
+                "tanggal": {
+                    "type": "string",
+                    "example": "2026-08-20"
+                },
+                "tujuan": {
+                    "type": "string",
+                    "example": "Yogyakarta"
+                },
+                "waktu": {
+                    "type": "string",
+                    "example": "07:00 WIB"
+                }
+            }
+        },
+        "model.DashboardStatsResponse": {
+            "type": "object",
+            "properties": {
+                "total_registrations": {
+                    "type": "integer"
+                },
+                "total_tourings": {
+                    "type": "integer"
+                },
+                "total_users": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Diskusi": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "touring_id": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.JoinTouringRequest": {
+            "type": "object",
+            "properties": {
+                "bike_model": {
+                    "type": "string",
+                    "example": "Vespa Sprint 150"
+                },
+                "license_plate": {
+                    "type": "string",
+                    "example": "AB 1234 XY"
+                },
+                "touring_id": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "model.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "password123"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "user4"
+                }
+            }
+        },
+        "model.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.RegisterRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "example": "password123"
+                },
+                "role": {
+                    "type": "string",
+                    "example": "user"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "user234"
+                }
+            }
+        },
+        "model.Registration": {
+            "type": "object",
+            "properties": {
+                "bike_model": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "license_plate": {
+                    "type": "string"
+                },
+                "registered_at": {
+                    "type": "string"
+                },
+                "touring": {
+                    "$ref": "#/definitions/model.Touring"
+                },
+                "touring_id": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Touring": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "created_by": {
+                    "type": "integer"
+                },
+                "deskripsi": {
+                    "type": "string"
+                },
+                "harga_tiket": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image_url": {
+                    "type": "string"
+                },
+                "kuota": {
+                    "type": "integer"
+                },
+                "lokasi_akhir": {
+                    "type": "string"
+                },
+                "lokasi_awal": {
+                    "type": "string"
+                },
+                "nama_touring": {
+                    "type": "string"
+                },
+                "tanggal": {
+                    "type": "string"
+                },
+                "tujuan": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "waktu": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.TouringListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Touring"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "total_page": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.UpdateProfileRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.User": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "description": "Changed: removed NOT NULL to handle existing data",
+                    "type": "string"
+                },
+                "email_verified": {
+                    "type": "boolean"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "profile_photo": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "vehicles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Vehicle"
+                    }
+                }
+            }
+        },
+        "model.Vehicle": {
+            "type": "object",
+            "properties": {
+                "bike_model": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "license_plate": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "utils.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "utils.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}
